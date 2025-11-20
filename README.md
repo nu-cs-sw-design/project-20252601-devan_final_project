@@ -1,7 +1,7 @@
 # Project: Live Music Tracker
 
 ## Contributors
-Devab Kumar
+Devan Kumar
 
 ## Dependencies
 - LANGUAGE AND VERSION
