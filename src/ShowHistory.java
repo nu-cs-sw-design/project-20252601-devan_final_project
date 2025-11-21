@@ -41,4 +41,54 @@ public class ShowHistory {
             i++;
         }
     }
+
+    public void printShowsByArtist(String artist) {
+        if (artist == null || artist.isEmpty()) {
+            System.out.println("Artist name cannot be empty.");
+            return;
+        }
+
+        boolean found = false;
+        int i = 1;
+        for (Show s : shows) {
+            if (s.getArtistOrEventName().equalsIgnoreCase(artist)) {
+                if (!found) {
+                    System.out.println("Shows for artist/event: " + artist);
+                }
+                System.out.println(i + ". " + s.toString());
+                found = true;
+            }
+            i++;
+        }
+
+        if (!found) {
+            System.out.println("No shows found for artist/event: " + artist);
+        }
+    }
+
+    public void printShowsByYear(String year) {
+        if (year == null || year.isEmpty()) {
+            System.out.println("Year cannot be empty.");
+            return;
+        }
+
+        boolean found = false;
+        int i = 1;
+        for (Show s : shows) {
+            String date = s.getDate(); // date stored as String
+            if (date != null && date.startsWith(year)) {
+                if (!found) {
+                    System.out.println("Shows in year: " + year);
+                }
+                System.out.println(i + ". " + s.toString());
+                found = true;
+            }
+            i++;
+        }
+
+        if (!found) {
+            System.out.println("No shows found in year: " + year);
+        }
+    }
+
 }

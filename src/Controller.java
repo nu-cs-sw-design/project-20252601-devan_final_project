@@ -28,6 +28,9 @@ public class Controller {
                 case "4":
                     markFavoriteWorkflow();
                     break;
+                case "5":
+                    filterHistoryWorkflow();  // NEW
+                    break;
                 case "0":
                     running = false;
                     System.out.println("Goodbye!");
@@ -35,6 +38,7 @@ public class Controller {
                 default:
                     System.out.println("Invalid choice. Please choose again.");
             }
+
         }
     }
 
@@ -45,9 +49,11 @@ public class Controller {
         System.out.println("2. View show history");
         System.out.println("3. Log experience for a show");
         System.out.println("4. Mark a show as favorite");
+        System.out.println("5. Filter show history");  // NEW
         System.out.println("0. Exit");
         System.out.print("Enter choice: ");
     }
+
 
     // Very basic, no validation yet (we'll refactor later)
     private void addShowWorkflow() {
@@ -128,4 +134,28 @@ public class Controller {
             return 5;
         }
     }
+
+    private void filterHistoryWorkflow() {
+        System.out.println("Filter options:");
+        System.out.println("1. By artist/event name");
+        System.out.println("2. By year (YYYY)");
+        System.out.print("Choose filter type: ");
+        String option = scanner.nextLine().trim();
+
+        switch (option) {
+            case "1":
+                System.out.print("Enter artist/event name: ");
+                String artist = scanner.nextLine();
+                history.printShowsByArtist(artist);
+                break;
+            case "2":
+                System.out.print("Enter year (e.g., 2024): ");
+                String year = scanner.nextLine();
+                history.printShowsByYear(year);
+                break;
+            default:
+                System.out.println("Unknown filter option.");
+        }
+    }
+
 }
