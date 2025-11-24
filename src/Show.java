@@ -70,6 +70,14 @@ public class Show {
         }
         if (experience != null) {
             base += " | Rating: " + experience.getRating();
+
+            // Add friends + notes too
+            if (experience.getFriends() != null && !experience.getFriends().isEmpty()) {
+                base += " | Friends: " + experience.getFriends();
+            }
+            if (experience.getNotes() != null && !experience.getNotes().isEmpty()) {
+                base += " | Notes: " + experience.getNotes();
+            }
         }
         return base;
     }

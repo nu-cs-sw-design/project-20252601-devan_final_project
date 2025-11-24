@@ -4,10 +4,14 @@ public class Controller {
 
     private ShowHistory history;
     private Scanner scanner;
+    private static final String DATA_FILE = "shows.txt";
 
     public Controller() {
         this.history = new ShowHistory();
         this.scanner = new Scanner(System.in);
+
+        // Load existing data on start (if file exists)
+        history.loadFromFile(DATA_FILE);
     }
 
     public void start() {
@@ -29,16 +33,17 @@ public class Controller {
                     markFavoriteWorkflow();
                     break;
                 case "5":
-                    filterHistoryWorkflow();  // NEW
+                    filterHistoryWorkflow();
                     break;
                 case "0":
+                    // Save before exiting
+                    history.saveToFile(DATA_FILE);
                     running = false;
                     System.out.println("Goodbye!");
                     break;
                 default:
                     System.out.println("Invalid choice. Please choose again.");
             }
-
         }
     }
 
