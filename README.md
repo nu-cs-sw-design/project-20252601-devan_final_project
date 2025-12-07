@@ -4,9 +4,7 @@
 Devan Kumar
 
 ## Dependencies
-- LANGUAGE AND VERSION
-- EXTERNAL LIBRARIES
-- ETC
+- Java 17+
 
 ## Build Instructions
-HOW TO BUILD YOUR PROJECT.
+You can compile and run the project from the command line or through an IDE like IntelliJ.
