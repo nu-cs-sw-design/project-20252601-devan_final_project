@@ -1,154 +1,156 @@
 @startuml
+ package presentation {
+     class Main {
+         +{static} main(args: String[]): void
+     }
 
-package presentation {
-    class Main {
-        +{static} main(args: String[]): void
-    }
+     class MainView {
+         -controller: ShowController
+         +MainView(controller: ShowController)
+         +start(): void
+         +displayShows(shows: java.util.List<Show>): void
+         +displaySummary(summary: String): void
+     }
+ }
 
-    class MainView {
-        -controller: ShowController
-        +MainView(controller: ShowController)
-        +start(): void
-        +displayShows(shows: java.util.List<Show>): void
-        +displaySummary(summary: String): void
-    }
-}
+ package domain {
+     class Show {
+         -id: long
+         -name: String
+         -date: java.time.LocalDate
+         -venue: String
+         -city: String
+         -eventType: EventType
+         -favorite: boolean
+         -experience: Experience
+         +Show(id: long, name: String, date: java.time.LocalDate, venue: String, city: String, eventType: EventType)
+         +getId(): long
+         +getName(): String
+         +getDate(): java.time.LocalDate
+         +getVenue(): String
+         +getCity(): String
+         +getEventType(): EventType
+         +isFavorite(): boolean
+         +markFavorite(): void
+         +getExperience(): Experience
+         +setExperience(experience: Experience): void
+     }
+
+     class Experience {
+         -rating: int
+         -notes: String
+         -friends: java.util.List<String>
+         +Experience(rating: int, notes: String, friends: java.util.List<String>)
+         +getRating(): int
+         +getNotes(): String
+         +getFriends(): java.util.List<String>
+     }
+
+     class ShowFilter {
+         -artistOrEventName: String
+         -year: Integer
+         -city: String
+         -eventType: EventType
+         +ShowFilter(artistOrEventName: String, year: Integer, city: String, eventType: EventType)
+         +matches(show: Show): boolean
+     }
+
+     enum EventType {
+         SHOW
+         FESTIVAL
+     }
+ }
+
+ package application {
+     interface ShowService {
+         +addShow(show: Show): void
+         +logExperience(showId: long, experience: Experience): void
+         +markFavorite(showId: long): void
+         +getAllShows(): java.util.List<Show>
+         +findShows(filter: ShowFilter): java.util.List<Show>
+         +generateSummary(filter: ShowFilter): String
+     }
+
+     class ShowController {
+         -service: ShowService
+         +ShowController(service: ShowService)
+         +handleAddShow(show: Show): void
+         +handleLogExperience(showId: long, experience: Experience): void
+         +handleMarkFavorite(showId: long): void
+         +handleListShows(): java.util.List<Show>
+         +handleFilterShows(filter: ShowFilter): java.util.List<Show>
+         +handleGenerateSummary(filter: ShowFilter): String
+     }
+
+     class DefaultShowService {
+         -repository: ShowRepository
+         -summaryExporter: SummaryExporter
+         +DefaultShowService(repository: ShowRepository, summaryExporter: SummaryExporter)
+         +addShow(show: Show): void
+         +logExperience(showId: long, experience: Experience): void
+         +markFavorite(showId: long): void
+         +getAllShows(): java.util.List<Show>
+         +findShows(filter: ShowFilter): java.util.List<Show>
+         +generateSummary(filter: ShowFilter): String
+     }
+ }
+
+ package data_layer {
+     interface ShowRepository {
+         +save(show: Show): void
+         +findById(id: long): Show
+         +findAll(): java.util.List<Show>
+         +findByFilter(filter: ShowFilter): java.util.List<Show>
+     }
+
+     class FileShowRepository {
+         -filePath: String
+         +FileShowRepository(filePath: String)
+         +save(show: Show): void
+         +findById(id: long): Show
+         +findAll(): java.util.List<Show>
+         +findByFilter(filter: ShowFilter): java.util.List<Show>
+     }
+
+     interface SummaryExporter {
+         +exportSummary(shows: java.util.List<Show>): String
+     }
+
+     class PlainTextSummaryExporter {
+         +PlainTextSummaryExporter()
+         +exportSummary(shows: java.util.List<Show>): String
+     }
+ }
 
 
-package application {
-    class Show {
-        -id: long
-        -name: String
-        -date: java.time.LocalDate
-        -venue: String
-        -city: String
-        -eventType: EventType
-        -favorite: boolean
-        -experience: Experience
-        +Show(id: long, name: String, date: java.time.LocalDate, venue: String, city: String, eventType: EventType)
-        +getId(): long
-        +getName(): String
-        +getDate(): java.time.LocalDate
-        +getVenue(): String
-        +getCity(): String
-        +getEventType(): EventType
-        +isFavorite(): boolean
-        +markFavorite(): void
-        +getExperience(): Experience
-        +setExperience(experience: Experience): void
-    }
+ Main ..> MainView
 
-    class Experience {
-        -rating: int
-        -notes: String
-        -friends: java.util.List<String>
-        +Experience(rating: int, notes: String, friends: java.util.List<String>)
-        +getRating(): int
-        +getNotes(): String
-        +getFriends(): java.util.List<String>
-    }
+ MainView --> ShowController
+ MainView ..> Show
+ MainView ..> ShowFilter
+ MainView ..> EventType
 
-    class ShowFilter {
-        -artistOrEventName: String
-        -year: Integer
-        -city: String
-        -eventType: EventType
-        +ShowFilter(artistOrEventName: String, year: Integer, city: String, eventType: EventType)
-        +matches(show: Show): boolean
-    }
+ ShowController --> ShowService
+ ShowController ..> Show
+ ShowController ..> Experience
+ ShowController ..> ShowFilter
 
-    enum EventType {
-        SHOW
-        FESTIVAL
-    }
+ DefaultShowService ..|> ShowService
+ DefaultShowService --> ShowRepository
+ DefaultShowService --> SummaryExporter
+ DefaultShowService ..> Show
+ DefaultShowService ..> Experience
+ DefaultShowService ..> ShowFilter
 
-    interface ShowService {
-        +addShow(show: Show): void
-        +logExperience(showId: long, experience: Experience): void
-        +markFavorite(showId: long): void
-        +getAllShows(): java.util.List<Show>
-        +findShows(filter: ShowFilter): java.util.List<Show>
-        +generateSummary(filter: ShowFilter): String
-    }
+ FileShowRepository ..|> ShowRepository
+ PlainTextSummaryExporter ..|> SummaryExporter
 
-    class ShowController {
-        -service: ShowService
-        +ShowController(service: ShowService)
-        +handleAddShow(show: Show): void
-        +handleLogExperience(showId: long, experience: Experience): void
-        +handleMarkFavorite(showId: long): void
-        +handleListShows(): java.util.List<Show>
-        +handleFilterShows(filter: ShowFilter): java.util.List<Show>
-        +handleGenerateSummary(filter: ShowFilter): String
-    }
+ ShowRepository ..> Show
+ ShowRepository ..> ShowFilter
 
-    class DefaultShowService {
-        -repository: ShowRepository
-        -summaryExporter: SummaryExporter
-        +DefaultShowService(repository: ShowRepository, summaryExporter: SummaryExporter)
-        +addShow(show: Show): void
-        +logExperience(showId: long, experience: Experience): void
-        +markFavorite(showId: long): void
-        +getAllShows(): java.util.List<Show>
-        +findShows(filter: ShowFilter): java.util.List<Show>
-        +generateSummary(filter: ShowFilter): String
-    }
-}
+ SummaryExporter ..> Show
 
-package data_layer {
-    interface ShowRepository {
-        +save(show: Show): void
-        +findById(id: long): Show
-        +findAll(): java.util.List<Show>
-        +findByFilter(filter: ShowFilter): java.util.List<Show>
-    }
-
-    class FileShowRepository {
-        -filePath: String
-        +FileShowRepository(filePath: String)
-        +save(show: Show): void
-        +findById(id: long): Show
-        +findAll(): java.util.List<Show>
-        +findByFilter(filter: ShowFilter): java.util.List<Show>
-    }
-
-    interface SummaryExporter {
-        +exportSummary(shows: java.util.List<Show>): String
-    }
-
-    class PlainTextSummaryExporter {
-        +PlainTextSummaryExporter()
-        +exportSummary(shows: java.util.List<Show>): String
-    }
-
-}
-
-' Relationships
-
-Main ..> MainView
-MainView --> ShowController
-
-ShowController --> ShowService
-ShowController ..> Show
-ShowController ..> Experience
-ShowController ..> ShowFilter
-
-DefaultShowService ..|> ShowService
-DefaultShowService --> ShowRepository
-DefaultShowService --> SummaryExporter
-
-FileShowRepository ..|> ShowRepository
-PlainTextSummaryExporter ..|> SummaryExporter
-
-ShowRepository ..> Show
-ShowRepository ..> ShowFilter
-
-SummaryExporter ..> Show
-
-Show --> Experience
-Show --> EventType
-ShowFilter --> EventType
-
-MainView ..> Show
-
+ Show --> Experience
+ Show --> EventType
+ ShowFilter --> EventType
 @enduml
